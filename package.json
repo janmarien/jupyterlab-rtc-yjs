@@ -1,0 +1,102 @@
+{
+  "name": "yjs_rtc",
+  "version": "0.1.0",
+  "description": "RTC Implementation using Y.js.",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/janmarien/yjs_rtc",
+  "bugs": {
+    "url": "https://github.com/janmarien/yjs_rtc/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Mariën Jan",
+    "email": "jan.marien@ugent.be"
+  },
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,.js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janmarien/yjs_rtc.git"
+  },
+  "scripts": {
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf yjs_rtc/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "jlpm run clean && jlpm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^3.0.6",
+    "@jupyterlab/apputils": "^3.0.5",
+    "@jupyterlab/codeeditor": "^3.0.5",
+    "@jupyterlab/docmanager": "^3.0.7",
+    "@jupyterlab/docregistry": "^3.0.7",
+    "@jupyterlab/filebrowser": "^3.0.9",
+    "@jupyterlab/fileeditor": "^3.0.7",
+    "@jupyterlab/launcher": "^3.0.6",
+    "@jupyterlab/nbformat": "^3.0.5",
+    "@jupyterlab/notebook": "^3.0.7",
+    "@jupyterlab/rendermime": "^3.0.6",
+    "@jupyterlab/services": "^6.0.6",
+    "@jupyterlab/settingregistry": "^3.0.3",
+    "@jupyterlab/ui-components": "^3.0.5",
+    "@lumino/algorithm": "^1.3.3",
+    "@lumino/disposable": "^1.4.3",
+    "@material-ui/core": "^4.11.3",
+    "automerge": "^0.14.2",
+    "process": "^0.11.10",
+    "uuid": "^3.4.0",
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.5.0",
+    "ws": "^7.4.4",
+    "y-codemirror": "^2.1.1",
+    "y-websocket": "^1.3.11",
+    "yjs": "^13.5.3"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^3.0.0",
+    "@types/codemirror": "^0.0.108",
+    "@types/node": "^14.14.36",
+    "@types/uuid": "^8.3.0",
+    "@types/ws": "^7.4.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "typescript": "~4.1.3"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "styleModule": "style/index.js",
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "yjs_rtc/labextension",
+    "webpackConfig": "webpack.config.js"
+  }
+}
