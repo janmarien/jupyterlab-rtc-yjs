@@ -1,8 +1,8 @@
-# yjs_rtc
+# JupyterLab RTC Extension
 
 RTC Extension for JupyterLab using [Y.js](https://github.com/yjs/yjs).
 
-
+This extension is developed as part of my master thesis. The thesis can be read [here](https://github.com/janmarien/jupyterlab-rtc-yjs/blob/master/Real-Time%20Collaboration%20in%20Jupyter%20Notebooks.pdf).
 
 ## Requirements
 
