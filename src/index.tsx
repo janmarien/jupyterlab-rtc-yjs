@@ -140,10 +140,16 @@ class RTCButton implements DocumentRegistry.IWidgetExtension<NotebookPanel, INot
 }
 
 
-function showRTCDialog(panel: NotebookPanel, host: string, user: string) {
+/**
+ * 
+ * @param {NotebookPanel} panel Notebookpanel hosting the notebook
+ * @param {string} hubHost JupyterHub host
+ * @param {string} hubUser JupyterHub username
+ */
+function showRTCDialog(panel: NotebookPanel, hubHost: string, hubUser: string) {
   var rtcID = panel.content.model.metadata.get('rtc-id') as string
   if (rtcID === undefined) {
-    const rtcNotebook = RTCNotebook.createNew(panel, host, user)
+    const rtcNotebook = RTCNotebook.createNew(panel, hubHost, hubUser)
     rtcID = rtcNotebook.notebookID
   }
   
