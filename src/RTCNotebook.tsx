@@ -75,19 +75,6 @@ export class RTCNotebook {
             this.initRemoteListener()
         }
 
-        this.notebook.stateChanged.connect((s, a) => {
-            console.log(a)
-        })
-
-        this.notebook.modelChanged.connect((s, a) => {
-            console.log(a)
-        })
-        
-        this.notebook.modelContentChanged.connect((s, a) => {
-            console.log(a)
-        })
-        
-
         this.ws = new WebsocketProvider(`ws://${hostname}:1234`, id, doc)
         this.ws.awareness.setLocalStateField('user', { name: user, color: Colors.random() })
         this.ws.once('sync', (_synced: boolean) => {
@@ -130,8 +117,6 @@ export class RTCNotebook {
                 this.initRemoteListener()
             }
             if (this.ws.awareness.getStates().size === 1 && !this.hosting) {
-                console.log(this.ws.awareness.getStates())
-                console.log('hosting')
                 this.hosting = true
                 this.notebookHost.delete(0, this.notebookHost.length)
                 this.notebookHost.insert(0, this.username)

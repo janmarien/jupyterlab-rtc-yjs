@@ -53,16 +53,6 @@ const plugins: JupyterFrontEndPlugin<void> = {
         })
       }
     })
-    const activeNotebooks = new Set<string>()
-    notebookTracker.currentChanged.connect((tracker, panel) => {
-      if (panel && !activeNotebooks.has(panel.id)) {
-        console.log(`New notebook opened: ${panel.id}`)
-        activeNotebooks.add(panel.id)
-        panel.disposed.connect(() => {
-          activeNotebooks.delete(panel.id)
-        })
-      }
-    })
     
     app.commands.addCommand(command2, {
       'label': 'Open shared notebook',
@@ -75,7 +65,6 @@ const plugins: JupyterFrontEndPlugin<void> = {
             const host = app.serviceManager.serverSettings.baseUrl.split('/')[2].split(':')[0]
             const user = app.serviceManager.serverSettings.baseUrl.split('/')[4]
             const id = panel.content.model.metadata.get('rtc-id') as string
-            console.log(id)
             RTCNotebook.load(panel, id, host, user)
           })
         })
