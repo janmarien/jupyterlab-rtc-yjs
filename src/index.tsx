@@ -144,7 +144,7 @@ function showRTCDialog(panel: NotebookPanel, host: string, user: string) {
   var rtcID = panel.content.model.metadata.get('rtc-id') as string
   if (rtcID === undefined) {
     const rtcNotebook = RTCNotebook.createNew(panel, host, user)
-    rtcID = rtcNotebook.id
+    rtcID = rtcNotebook.notebookID
   }
   
   const body = new Panel()
