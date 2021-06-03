@@ -660,11 +660,6 @@ export class RTCNotebook {
     private handleExecution(e: Y.YMapEvent<any>): void {
         const id = e.path[0] as string
         const cell = this._notebook.widgets[this.getCellIndex(id)] as CodeCell
-        const currentVal = this._cells.get(id).get('xCount') as number
-        if (cell.model.metadata.get('xCount') === currentVal) {
-            console.log('reachable')
-            return
-        }
         CodeCell.execute(cell, this._panel.sessionContext)
     }
 
