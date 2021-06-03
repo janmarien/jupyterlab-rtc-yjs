@@ -1,3 +1,6 @@
+/**
+ * @author Mariën Jan 
+ */
 
 import {
   JupyterFrontEnd, JupyterFrontEndPlugin
@@ -12,13 +15,10 @@ import iconString from '../style/share.svg'
 import iconActiveString from '../style/share_active.svg'
 import pngString from '../style/share_active.png'
 import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { INotebookModel, NotebookPanel, INotebookTracker } from '@jupyterlab/notebook';
+import { INotebookModel, NotebookPanel} from '@jupyterlab/notebook';
 import { DisposableDelegate, IDisposable } from '@lumino/disposable';
 import { Panel, PanelLayout } from '@lumino/widgets'
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser'
-
-
-
 
 const icon = new LabIcon({
   name: 'rtc-icon',
@@ -34,9 +34,9 @@ const iconActive = new LabIcon({
 const plugins: JupyterFrontEndPlugin<void> = {
   id: 'rtc',
   autoStart: true,
-  requires: [IFileBrowserFactory, INotebookTracker],
+  requires: [IFileBrowserFactory],
   optional: [ILauncher],
-  activate: (app: JupyterFrontEnd, filebrowser: IFileBrowserFactory, notebookTracker: INotebookTracker, launcher: ILauncher, ) => {
+  activate: (app: JupyterFrontEnd, filebrowser: IFileBrowserFactory, launcher: ILauncher, ) => {
     const command: string = 'rtc:startNotebook'
     const command2: string = 'rtc:loadNotebook'
     app.docRegistry.addWidgetExtension('Notebook', new RTCButton(app));
@@ -88,7 +88,13 @@ const plugins: JupyterFrontEndPlugin<void> = {
   }
 }
 
-function connectToRTCNotebook(app: JupyterFrontEnd, rtcID: string, path: string) {
+/**
+ * Initialise a new notebook file and connect it to the shared notebook
+ * @param {JupyterFrontEnd} app JupyterLab frontend
+ * @param {string} notebookID ID of the shared notebook
+ * @param {string} path Local path where to store the notebook file 
+ */
+function connectToRTCNotebook(app: JupyterFrontEnd, notebookID: string, path: string) {
   const host = app.serviceManager.serverSettings.baseUrl.split('/')[2].split(':')[0]
   const user = app.serviceManager.serverSettings.baseUrl.split('/')[4]
   app.commands.execute('notebook:create-new', {
@@ -98,14 +104,22 @@ function connectToRTCNotebook(app: JupyterFrontEnd, rtcID: string, path: string)
     const spinner = new Spinner()
     panel.node.appendChild(spinner.node)
     panel.context.ready.then(() => {
-      panel.content.model.metadata.set('rtc-id', rtcID)
+      panel.content.model.metadata.set('rtc-id', notebookID)
       panel.context.save()
     })
-    loadRTCNotebook(panel, rtcID, spinner, host, user)
+    loadRTCNotebook(panel, notebookID, spinner, host, user)
   })
 
 }
 
+/**
+ * Connect to a shared notebook
+ * @param {NotebookPanel} panel 
+ * @param {string} rtcID 
+ * @param {Spinner} spinner 
+ * @param {string} host 
+ * @param {string} user 
+ */
 function loadRTCNotebook(panel: NotebookPanel, rtcID: string, spinner: Spinner, host: string, user: string) {
   RTCNotebook.connect(panel, rtcID, host, user)
   spinner.hide()
@@ -113,24 +127,33 @@ function loadRTCNotebook(panel: NotebookPanel, rtcID: string, spinner: Spinner, 
 
 }
 
+/**
+ * Class representing the button used to shared a notebook
+ */
 class RTCButton implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
-  host: string
-  user: string
+  _hubHost: string
+  _hubUser: string
   constructor(app: JupyterFrontEnd) {
-    this.host = app.serviceManager.serverSettings.baseUrl.split('/')[2].split(':')[0]
-    this.user = app.serviceManager.serverSettings.baseUrl.split('/')[4]
+    this._hubHost = app.serviceManager.serverSettings.baseUrl.split('/')[2].split(':')[0]
+    this._hubUser = app.serviceManager.serverSettings.baseUrl.split('/')[4]
   }
 
 
-  createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
+  /**
+   * Creates a new button and inserts it into the Notebookpanel's toolbar
+   * @param {NotebookPanel} panel Panel hosting the notebook
+   * @param {DocumentRegistry.IContext<INotebookModel>} _context Ignored
+   * @returns {IDisposable}
+   */
+  createNew(panel: NotebookPanel, _context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
     let callBack = () => {
-      showRTCDialog(panel, this.host, this.user)
+      showRTCDialog(panel, this._hubHost, this._hubUser)
     }
     let button = new ToolbarButton({
       className: 'rtcButton',
       icon: icon,
       onClick: callBack,
-      tooltip: 'RTC Notebook'
+      tooltip: 'Share notebook'
     })
     panel.toolbar.insertItem(0, "RTC", button)
     return new DisposableDelegate(() => {
@@ -140,11 +163,18 @@ class RTCButton implements DocumentRegistry.IWidgetExtension<NotebookPanel, INot
 }
 
 
-function showRTCDialog(panel: NotebookPanel, host: string, user: string) {
+/**
+ * Intialises a shared notebook and displays a dialog which contains the shared id
+ * @param {NotebookPanel} panel Notebookpanel hosting the notebook
+ * @param {string} hubHost JupyterHub host
+ * @param {string} hubUser JupyterHub username
+ */
+function showRTCDialog(panel: NotebookPanel, hubHost: string, hubUser: string) {
+  // Check whether the notebook already has a shared id
   var rtcID = panel.content.model.metadata.get('rtc-id') as string
   if (rtcID === undefined) {
-    const rtcNotebook = RTCNotebook.createNew(panel, host, user)
-    rtcID = rtcNotebook.id
+    const rtcNotebook = RTCNotebook.createNew(panel, hubHost, hubUser)
+    rtcID = rtcNotebook.notebookID
   }
   
   const body = new Panel()
